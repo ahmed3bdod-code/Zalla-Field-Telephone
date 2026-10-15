@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f6b5c">
+<title>دليل الهواتف</title>
+<style>
+:root{
+  --bg:#f4f6f5;--surface:#fff;--ink:#17211f;--muted:#5d6b68;--line:#dfe6e4;
+  --brand:#0f6b5c;--brand-ink:#fff;--accent:#e8f3f0;--danger:#b3261e;--shadow:0 1px 3px rgba(0,0,0,.12);
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#101615;--surface:#182120;--ink:#e8efed;--muted:#9aaba7;--line:#2a3735;
+  --brand:#3fb59f;--brand-ink:#08201b;--accent:#1d2f2c;--danger:#f2b8b5;--shadow:none}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",sans-serif;font-size:16px}
+header{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:calc(10px + env(safe-area-inset-top)) 16px 12px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{font-size:19px;margin:0;font-weight:700}
+.icon-btn{background:transparent;border:0;color:inherit;font-size:22px;width:40px;height:40px;border-radius:50%;cursor:pointer}
+.icon-btn:active{background:rgba(255,255,255,.2)}
+.search{margin-top:10px;display:flex;gap:8px}
+.search input,.search select{height:44px;border:0;border-radius:10px;padding:0 12px;font-size:16px;background:var(--surface);color:var(--ink)}
+.search input{flex:1;min-width:0}
+.search select{max-width:42%}
+.count{padding:10px 16px 0;color:var(--muted);font-size:14px}
+main{padding:8px 12px 96px;max-width:720px;margin:0 auto}
+.card{background:var(--surface);border-radius:14px;padding:12px 14px;margin:8px 0;box-shadow:var(--shadow);border:1px solid var(--line)}
+.row1{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.phone{font-size:24px;font-weight:700;letter-spacing:.5px;direction:ltr;unicode-bidi:isolate;color:var(--brand)}
+.dept{font-size:15px;color:var(--ink);text-align:start;flex:1;padding-inline-start:4px;direction:auto;unicode-bidi:plaintext}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{max-width:100%;overflow-wrap:anywhere;background:var(--accent);border-radius:999px;padding:3px 10px;font-size:13px;direction:ltr;unicode-bidi:isolate}
+.chip b{font-weight:600;color:var(--muted);margin-inline-end:4px}
+.loc{margin-top:8px;font-size:14px;color:var(--muted);direction:ltr;text-align:start;unicode-bidi:plaintext}
+.actions{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;height:42px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:15px;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.btn.danger{color:var(--danger)}
+.empty{text-align:center;color:var(--muted);padding:48px 16px}
+.fab{position:fixed;inset-inline-start:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;border:0;background:var(--brand);color:var(--brand-ink);font-size:30px;box-shadow:0 3px 10px rgba(0,0,0,.3);cursor:pointer}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;z-index:20;align-items:flex-end;justify-content:center}
+.sheet-bg.open{display:flex}
+.sheet{background:var(--surface);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+.sheet h2{margin:0 0 12px;font-size:18px}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.sheet input,.sheet textarea{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:16px;direction:auto}
+.sheet textarea{min-height:80px;resize:vertical}
+.btns{display:flex;gap:8px;margin-top:16px}
+.menu button{width:100%;text-align:start;padding:14px 8px;font-size:16px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.err{color:var(--danger);font-size:13px;margin-top:6px;min-height:16px}
+.toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;z-index:40;display:none;max-width:86%}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>📞 دليل الهواتف</h1>
+    <button class="icon-btn" id="menuBtn" aria-label="القائمة">⋮</button>
+  </div>
+  <div class="search">
+    <input id="q" type="search" placeholder="بحث…" autocomplete="off">
+    <select id="deptFilter" aria-label="القسم"></select>
+  </div>
+</header>
+<div class="count" id="count"></div>
+<main id="list"></main>
+<button class="fab" id="addBtn" aria-label="إضافة">+</button>
+
+<div class="sheet-bg" id="editBg"><div class="sheet">
+  <h2 id="editTitle">إضافة موظف</h2>
+  <label>رقم الهاتف *</label><input id="f_phone" inputmode="numeric">
+  <label>القسم</label><input id="f_dept">
+  <label>J Box</label><input id="f_jbox">
+  <label>الكابل (Cable in location)</label><input id="f_cable">
+  <label>رقم الزوج (Pair Number)</label><input id="f_pair">
+  <label>الموقع (Location)</label><textarea id="f_loc"></textarea>
+  <div class="err" id="editErr"></div>
+  <div class="btns"><button class="btn primary" id="saveBtn">حفظ</button><button class="btn" id="cancelBtn">إلغاء</button></div>
+</div></div>
+
+<div class="sheet-bg" id="menuBg"><div class="sheet menu">
+  <h2>القائمة</h2>
+  <button id="mExport">مشاركة / تصدير الجدول (CSV)</button>
+  <button id="mBackup">نسخة احتياطية (JSON)</button>
+  <button id="mImport">استيراد من نسخة احتياطية</button>
+  <button id="mReset">استعادة بيانات الملف الأصلي</button>
+  <button id="mClose">إغلاق</button>
+</div></div>
+
+<div class="sheet-bg" id="importBg"><div class="sheet">
+  <h2>استيراد نسخة احتياطية</h2>
+  <label>الصق نص النسخة الاحتياطية (JSON) هنا. سيحلّ محل البيانات الحالية.</label>
+  <textarea id="importText" style="min-height:160px;direction:ltr"></textarea>
+  <div class="err" id="importErr"></div>
+  <div class="btns"><button class="btn primary" id="importOk">استيراد</button><button class="btn" id="importCancel">إلغاء</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SEED = [{"phone": "77006", "jbox": "cont 1", "cable": "C", "dept": "Cntrol Rm bacement", "pair": "14", "loc": "@ Control Room, pair 8"}, {"phone": "77504", "jbox": "T1", "cable": "C", "dept": "W.H", "pair": "10", "loc": "T1 Ca6 Pa10 & T2@Cr3 Pa2 & T4@Ca1 Pa2 & W.H Pa2"}, {"phone": "77009", "jbox": "", "cable": "A", "dept": "Garage", "pair": "15", "loc": "@ Garage Shop"}, {"phone": "77011", "jbox": "cont 1", "cable": "C", "dept": "production", "pair": "3, in comms", "loc": "@control room , pair 3"}, {"phone": "77015", "jbox": "T1", "cable": "B", "dept": "PT&S", "pair": "41", "loc": "T1 @crona5 p6"}, {"phone": "77500", "jbox": "Coms1", "cable": "in work shop", "dept": "comms", "pair": "10", "loc": "@workshop"}, {"phone": "77511", "jbox": "con1", "cable": "A", "dept": "production", "pair": "19", "loc": "@ control room ,pair 1, (Dtem)"}, {"phone": "77007", "jbox": "T52", "cable": "B", "dept": "Comms", "pair": "7", "loc": "Camp area pair 7,T55"}, {"phone": "77175", "jbox": "T52,T53,T55A", "cable": "A", "dept": "villa 15-c", "pair": "5", "loc": "Pair 4 @ T52,T53 and pair 4 @ T55A"}, {"phone": "77510", "jbox": "T52,T53,T55,T55A", "cable": "A", "dept": "co-ordinator", "pair": "2", "loc": "Pair 4 @ T52,T53 and Pair  @ T55A"}, {"phone": "77176", "jbox": "T52,T52,T55A", "cable": "A", "dept": "V15", "pair": "8", "loc": "Pair 8@ T52"}, {"phone": "77051", "jbox": "T52,T53,T55A", "cable": "A", "dept": "V15-B", "pair": "6", "loc": "Pair 6 @T52"}, {"phone": "77016", "jbox": "T52,T53,T54-T32", "cable": "A", "dept": "Mantanence Spv", "pair": "3", "loc": "Pair 2@T52, P1@T32-V15@Cron1 p7"}, {"phone": "77123", "jbox": "T52,T53,T55A", "cable": "A", "dept": "Drilling", "pair": "10", "loc": "Pair 10@ T52"}, {"phone": "77102", "jbox": "T 1A,T52", "cable": "7002", "dept": "lab", "pair": "18,C4", "loc": "pair 28 in 7002 @T1A, pair5 inT52 ,pair5 inT43"}, {"phone": "77020", "jbox": "T1, T52,T53", "cable": "A", "dept": "field Co-ord", "pair": "13", "loc": "T1@P8 - T52@P13, T53@P16"}, {"phone": "77068", "jbox": "T54", "cable": "B", "dept": "Fab Shop", "pair": "13", "loc": "C3@MDF, T54P13"}, {"phone": "77040", "jbox": "T52,T54,T55A", "cable": "A", "dept": "V15", "pair": "19", "loc": "camp area pair 8,T55"}, {"phone": "77100", "jbox": "T54", "cable": "A", "dept": "V15", "pair": "14", "loc": "Dr-room 4-C"}, {"phone": "77033", "jbox": "T54", "cable": "A", "dept": "V15", "pair": "50", "loc": "safety,room 6-B"}, {"phone": "77037", "jbox": "T52", "cable": "B", "dept": "catering boos", "pair": "1", "loc": "Camp area T52"}, {"phone": "77145", "jbox": "T2", "cable": "", "dept": "E.S.P", "pair": "3", "loc": "pair 3 in T2 @ Army,security gate, E.S.P"}, {"phone": "77067", "jbox": "T52B&T54", "cable": "B", "dept": "Admin", "pair": "12", "loc": "Pair12@T52 to Camp"}, {"phone": "77520", "jbox": "T1", "cable": "A", "dept": "Field Sup", "pair": "8", "loc": "T1 crona3 P8 (Dtem)"}, {"phone": "77567", "jbox": "T1", "cable": "B", "dept": "Admin SUPV", "pair": "8", "loc": "crona 5 p8 @T1, to admin Bulding"}, {"phone": "77177", "jbox": "T52-T54-T32", "cable": "A", "dept": "v15-B", "pair": "20", "loc": "T52@P20-T54@P3-V15C3@3"}, {"phone": "77010", "jbox": "T52-T53-T54-T32", "cable": "A", "dept": "V15-C", "pair": "2", "loc": "T52@p2-T32@P2-V15-C3@P2"}, {"phone": "77044", "jbox": "T52,T43-A,T43", "cable": "A", "dept": "Villa 4", "pair": "3", "loc": "Pair 14 @T52 , Pair 16 @T43-A , Pair 3 @T43 Cor1"}, {"phone": "77064", "jbox": "", "cable": "", "dept": "Security clearances", "pair": "5,in comms", "loc": "Ca7 Pa5"}, {"phone": "77043", "jbox": "T1", "cable": "F", "dept": "safety", "pair": "4", "loc": "Crona 3 pair 4"}];
+const KEY = 'phone_directory_v1';
+const $ = id => document.getElementById(id);
+const FIELDS = ['phone','dept','jbox','cable','pair','loc'];
+let rows = [];
+let editingId = null;
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function seed(){ return SEED.map(r=>({id:uid(),...r})); }
+function load(){
+  try{ const s = localStorage.getItem(KEY); if(s){ rows = JSON.parse(s); return; } }catch(e){}
+  rows = seed(); save();
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(rows)); }catch(e){ toast('تعذّر حفظ البيانات'); } }
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(toast.t); toast.t=setTimeout(()=>t.style.display='none',2200); }
+function norm(s){
+  return String(s||'').toLowerCase()
+   .replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+   .replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+}
+function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function fillDepts(){
+  const sel=$('deptFilter'), cur=sel.value;
+  const depts=[...new Set(rows.map(r=>r.dept.trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  sel.innerHTML='<option value="">كل الأقسام</option>'+depts.map(d=>`<option>${esc(d)}</option>`).join('');
+  if(depts.includes(cur)) sel.value=cur;
+}
+function render(){
+  const q=norm($('q').value).trim().split(/\s+/).filter(Boolean);
+  const dep=$('deptFilter').value;
+  const list=rows.filter(r=>{
+    if(dep && r.dept.trim()!==dep) return false;
+    const hay=norm(FIELDS.map(f=>r[f]).join(' '));
+    return q.every(t=>hay.includes(t));
+  }).sort((a,b)=>a.phone.localeCompare(b.phone,undefined,{numeric:true}));
+  $('count').textContent = list.length===rows.length ? `${rows.length} سجل` : `${list.length} من ${rows.length}`;
+  $('list').innerHTML = list.length ? list.map(r=>`
+    <div class="card" data-id="${r.id}">
+      <div class="row1"><div class="phone">${esc(r.phone)}</div><div class="dept">${esc(r.dept)||'—'}</div></div>
+      <div class="chips">
+        ${r.jbox?`<span class="chip"><b>J Box</b>${esc(r.jbox)}</span>`:''}
+        ${r.cable?`<span class="chip"><b>Cable</b>${esc(r.cable)}</span>`:''}
+        ${r.pair?`<span class="chip"><b>Pair</b>${esc(r.pair)}</span>`:''}
+      </div>
+      ${r.loc?`<div class="loc">${esc(r.loc)}</div>`:''}
+      <div class="actions">
+        <a class="btn primary" href="tel:${esc(r.phone.replace(/[^\d+]/g,''))}">اتصال</a>
+        <button class="btn" data-act="edit">تعديل</button>
+        <button class="btn danger" data-act="del">حذف</button>
+      </div>
+    </div>`).join('') : '<div class="empty">لا توجد نتائج مطابقة</div>';
+}
+function open(id){ $(id).classList.add('open'); }
+function close(id){ $(id).classList.remove('open'); }
+
+function openEditor(id){
+  editingId=id||null;
+  const r = id ? rows.find(x=>x.id===id) : {};
+  $('editTitle').textContent = id ? 'تعديل البيانات' : 'إضافة موظف';
+  FIELDS.forEach(f=>$('f_'+f).value = r[f]||'');
+  $('editErr').textContent='';
+  open('editBg');
+}
+function saveEditor(){
+  const rec={};
+  ['dept','jbox','cable','pair','loc'].forEach(f=>rec[f]=$('f_'+f).value.trim());
+  rec.phone=norm($('f_phone').value).trim();
+  if(!rec.phone){ $('editErr').textContent='رقم الهاتف مطلوب'; return; }
+  const dup=rows.find(r=>r.phone===rec.phone && r.id!==editingId);
+  if(dup && !confirm('هذا الرقم موجود مسبقاً. هل تريد الحفظ على أي حال؟')) return;
+  if(editingId){ const i=rows.findIndex(r=>r.id===editingId); rows[i]={...rows[i],...rec}; }
+  else rows.push({id:uid(),...rec});
+  save(); fillDepts(); render(); close('editBg'); toast('تم الحفظ');
+}
+function csv(){
+  const head=['No','Phone Number','J Box','Cable in location','Department','Pair Number','Location'];
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const body=[...rows].sort((a,b)=>a.phone.localeCompare(b.phone,undefined,{numeric:true}))
+    .map((r,i)=>[i+1,r.phone,r.jbox,r.cable,r.dept,r.pair,r.loc].map(q).join(','));
+  return '﻿'+[head.map(q).join(','),...body].join('\r\n');
+}
+function shareOrDownload(name,text,mime){
+  if(window.Android && Android.share){ Android.share(name,text,mime); return; }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:mime}));
+  a.download=name; document.body.appendChild(a); a.click(); a.remove();
+}
+
+$('q').addEventListener('input',render);
+$('deptFilter').addEventListener('change',render);
+$('addBtn').onclick=()=>openEditor();
+$('saveBtn').onclick=saveEditor;
+$('cancelBtn').onclick=()=>close('editBg');
+$('menuBtn').onclick=()=>open('menuBg');
+$('mClose').onclick=()=>close('menuBg');
+$('list').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const id=b.closest('.card').dataset.id;
+  if(b.dataset.act==='edit') openEditor(id);
+  else if(confirm('هل تريد حذف هذا السجل؟')){ rows=rows.filter(r=>r.id!==id); save(); fillDepts(); render(); toast('تم الحذف'); }
+});
+$('mExport').onclick=()=>{ close('menuBg'); shareOrDownload('phone-directory.csv',csv(),'text/csv'); };
+$('mBackup').onclick=()=>{ close('menuBg'); shareOrDownload('phone-directory-backup.json',JSON.stringify(rows),'application/json'); };
+$('mImport').onclick=()=>{ close('menuBg'); $('importText').value=''; $('importErr').textContent=''; open('importBg'); };
+$('importCancel').onclick=()=>close('importBg');
+$('importOk').onclick=()=>{
+  try{
+    const d=JSON.parse($('importText').value);
+    if(!Array.isArray(d)||!d.every(r=>r&&typeof r.phone!=='undefined')) throw 0;
+    rows=d.map(r=>({id:r.id||uid(),phone:String(r.phone),dept:r.dept||'',jbox:r.jbox||'',cable:r.cable||'',pair:r.pair||'',loc:r.loc||''}));
+    save(); fillDepts(); render(); close('importBg'); toast('تم الاستيراد');
+  }catch(e){ $('importErr').textContent='النص غير صالح. تأكد من لصق النسخة الاحتياطية كاملة.'; }
+};
+$('mReset').onclick=()=>{
+  close('menuBg');
+  if(confirm('سيتم حذف كل التعديلات واستعادة بيانات الملف الأصلي. متابعة؟')){ rows=seed(); save(); fillDepts(); render(); toast('تمت الاستعادة'); }
+};
+document.querySelectorAll('.sheet-bg').forEach(bg=>bg.addEventListener('click',e=>{ if(e.target===bg) bg.classList.remove('open'); }));
+window.onAndroidBack=function(){
+  const o=document.querySelector('.sheet-bg.open');
+  if(o){ o.classList.remove('open'); return true; }
+  return false;
+};
+
+load(); fillDepts(); render();
+</script>
+</body>
+</html>
